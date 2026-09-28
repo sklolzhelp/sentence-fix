@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<title>Sentence Fix v2.0</title>
+<title>Sentence Fix v2.1</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:rgba(126,224,197,.25)}
 html,body{margin:0;padding:0;background:#0e1117;color:#e8edf5;font-family:Trebuchet MS,Segoe UI,sans-serif}
@@ -29,81 +29,52 @@ button.ghost{background:transparent;border:1px solid #2a3344}
 .bar{height:8px;background:#243044;border-radius:99px;overflow:hidden;margin:8px 0 14px}.bar>i{display:block;height:100%;width:0;background:#7ee0c5}
 .pill{display:inline-block;font-size:.72rem;padding:3px 8px;border-radius:999px;background:#243046;color:#7ee0c5;margin-bottom:8px}
 .stat{color:#9aa6b8;font-size:.85rem}
-h2{margin:0 0 8px;font-size:1.15rem}
-p{line-height:1.5}
-</style>
-</head>
-<body>
-<div class="wrap">
-<div class="ver">v2.0</div>
-<header class="app">
-  <div class="brand"><div class="logo">SF</div><div><h1>Sentence Fix</h1><div class="sub">Brain hacks • v2.0</div></div></div>
-  <div class="xp" id="xp">XP 0</div>
-</header>
-<section id="home" class="card">
-  <span class="pill">Foundation first</span>
-  <p>Do not memorize a rewrite. Learn the test. Then any question is the same question.</p>
-  <button type="button" class="primary" style="width:100%;margin:8px 0" id="teachBtn">Teach me everything</button>
-  <button type="button" class="ghost" style="width:100%" id="drillBtn">Concept drill</button>
-  <button type="button" class="ghost" style="width:100%;margin-top:8px" id="quizBtn">Graded check (10)</button>
-  <p class="stat" id="homeStats"></p>
-</section>
-<section id="play" class="card hidden">
-  <div class="stat" id="meta"></div>
-  <div class="bar"><i id="bar"></i></div>
-  <div id="hackBox" class="hack"></div>
-  <div id="prompt" class="sentence"></div>
-  <div id="choices" class="choices"></div>
-  <div id="feed" class="feedback"></div>
-  <div class="row" style="margin-top:12px">
-    <button type="button" class="ghost" id="homeBtn">Home</button>
-    <button type="button" class="primary" id="nextBtn" disabled>Next</button>
-  </div>
-</section>
-<section id="results" class="card hidden">
-  <span class="pill">Check results</span>
-  <div id="finalScore" style="font-size:2.4rem;font-weight:800"></div>
-  <p id="finalMsg"></p>
-  <div id="missList"></div>
-  <div class="row" style="margin-top:16px">
-    <button type="button" class="primary" id="retakeBtn">Again</button>
-    <button type="button" class="ghost" id="resHome">Home</button>
-  </div>
-</section>
-</div>
+</style></head><body>
+<div class="wrap"><div class="ver">v2.1</div>
+<header class="app"><div class="brand"><div class="logo">SF</div><div><h1>Sentence Fix</h1><div class="sub">Brain hacks • v2.1</div></div></div><div class="xp" id="xp">XP 0</div></header>
+<section id="home" class="card"><span class="pill">Foundation first</span>
+<p>Do not memorize a rewrite. Learn the test. Then any question is the same question.</p>
+<button type="button" class="primary" style="width:100%;margin:8px 0" id="teachBtn">Teach me everything</button>
+<button type="button" class="ghost" style="width:100%" id="drillBtn">Concept drill</button>
+<button type="button" class="ghost" style="width:100%;margin-top:8px" id="quizBtn">Graded check (10)</button>
+<p class="stat" id="homeStats"></p></section>
+<section id="play" class="card hidden"><div class="stat" id="meta"></div><div class="bar"><i id="bar"></i></div><div id="hackBox" class="hack"></div><div id="prompt" class="sentence"></div><div id="choices" class="choices"></div><div id="feed" class="feedback"></div>
+<div class="row" style="margin-top:12px"><button type="button" class="ghost" id="homeBtn">Home</button><button type="button" class="primary" id="nextBtn" disabled>Next</button></div></section>
+<section id="results" class="card hidden"><span class="pill">Check results</span><div id="finalScore" style="font-size:2.4rem;font-weight:800"></div><p id="finalMsg"></p><div id="missList"></div>
+<div class="row" style="margin-top:16px"><button type="button" class="primary" id="retakeBtn">Again</button><button type="button" class="ghost" id="resHome">Home</button></div></section></div>
 <script>
 const STORE="sentenceFixSave_v3";
 let save={xp:0,bestPct:0,quizzes:0};
 try{const raw=localStorage.getItem(STORE);if(raw)save=Object.assign(save,JSON.parse(raw))}catch(e){}
 let xp=save.xp||0;
 const HACKS={
-  finish:"<b>Hack 1 \u2014 Finished thought.</b> Ask: can this stand alone as a sentence? Need someone/something + what they do. If it still feels like a setup, it is not finished.",
-  hang:"<b>Hack 2 \u2014 Hanger words.</b> because, when, if, although, after, while, which, -ing openers. A hanger plus no main sentence = fragment. Do not invent a new story. Either drop the hanger or attach a finished thought.",
-  two:"<b>Hack 3 \u2014 Count the thoughts.</b> How many finished sentences are hiding here? 0 = fragment. 1 = already legal (or needs a hanger attached). 2 = they must be joined legally.",
-  join:"<b>Hack 4 \u2014 Legal join.</b> Two finished thoughts may use: period • semicolon • comma + FANBOYS (for, and, nor, but, or, yet, so). A comma alone is illegal. however / therefore / then are not FANBOYS.",
-  cover:"<b>Hack 5 \u2014 Cover the comma.</b> Hide the comma with your finger. If BOTH sides can stand alone, that comma is a splice. If one side cannot stand alone, the comma is doing real work."
+finish:"<b>Hack 1 \u2014 Finished thought.</b> Ask: can this stand alone as a sentence? Need someone/something + what they do. If it still feels like a setup, it is not finished.",
+hang:"<b>Hack 2 \u2014 Hanger words.</b> because, when, if, although, after, while, which, -ing openers. A hanger plus no main sentence = fragment. Do not invent a new story. Either drop the hanger or attach a finished thought.",
+two:"<b>Hack 3 \u2014 Count the thoughts.</b> How many finished sentences are hiding here? 0 = fragment. 1 = already legal (or needs a hanger attached). 2 = they must be joined legally.",
+join:"<b>Hack 4 \u2014 Legal join.</b> Two finished thoughts may use a period, a semicolon, or a comma plus one FANBOYS word. FANBOYS is a memory trick for the only seven joining words that work after a comma: <b>F</b>or, <b>A</b>nd, <b>N</b>or, <b>B</b>ut, <b>O</b>r, <b>Y</b>et, <b>S</b>o. A comma alone is illegal. however / therefore / then are not FANBOYS words.",
+cover:"<b>Hack 5 \u2014 Cover the comma.</b> Hide the comma with your finger. If BOTH sides can stand alone, that comma is a splice. If one side cannot stand alone, the comma is doing real work."
 };
 const TOUR=[
-  {hack:"finish", prompt:"Can this stand alone?", line:"The locker at the end of the hall.", opts:[["Yes \u2014 finished","no"],["No \u2014 not finished","yes"]], why:"There is a thing (locker) but no action. Not a finished thought. Fragment."},
-  {hack:"finish", prompt:"Can this stand alone?", line:"The alarm rang.", opts:[["Yes \u2014 finished","yes"],["No \u2014 not finished","no"]], why:"Someone/something + action. Finished thought."},
-  {hack:"hang", prompt:"What is the hanger?", line:"Although she studied for an hour.", opts:[["Although","yes"],["she studied","no"],["an hour","no"]], why:"Although makes this a setup. Those words cannot stand alone. Fragment \u2014 not because we failed to add a new sentence, because the hanger was never attached."},
-  {hack:"hang", prompt:"How do you make this legal without inventing new facts?", line:"Because the bus was late.", opts:[["Drop Because \u2192 The bus was late.","yes"],["Add a comma only","no"],["Leave it","no"]], why:"Drop the hanger and the original words are already a sentence. You do not have to invent warm-ups or anything else."},
-  {hack:"two", prompt:"How many finished thoughts?", line:"Maya finished her essay she submitted it before midnight.", opts:[["Zero","no"],["One","no"],["Two","yes"]], why:"Maya finished her essay. She submitted it. Two finished thoughts with nothing between them = run-on."},
-  {hack:"two", prompt:"How many finished thoughts?", line:"After the final bell rang.", opts:[["Zero","yes"],["One","no"],["Two","no"]], why:"After\u2026 is a hanger. Zero finished thoughts. Fragment."},
-  {hack:"join", prompt:"What is legal between two finished thoughts?", line:"The dog barked ___ the cat hid.", opts:[["comma only","no"],["comma + and","yes"],["however after a comma","no"]], why:"FANBOYS: for and nor but or yet so. Comma + and is legal. Comma alone is a splice. however is not FANBOYS."},
-  {hack:"join", prompt:"Name this.", line:"The rain started we ran under the awning.", opts:[["Fragment","no"],["Run-on","yes"],["Comma splice","no"],["Correct","no"]], why:"Two finished thoughts. No mark. Run-on."},
-  {hack:"cover", prompt:"Cover the comma. What do you have?", line:"Lila packed her bag, she forgot her charger.", opts:[["Both sides finished \u2192 splice","yes"],["Left side unfinished \u2192 legal comma","no"]], why:"Lila packed her bag. She forgot her charger. Both stand alone. Comma only = splice."},
-  {hack:"cover", prompt:"Cover the comma. What do you have?", line:"Although she studied, she still felt nervous.", opts:[["Both sides finished \u2192 splice","no"],["Left side unfinished \u2192 legal comma","yes"]], why:"Although she studied cannot stand alone. The comma attaches a hanger to a finished thought. Legal. Not a splice."},
-  {hack:"join", prompt:"Name this.", line:"The library closes at six, however the lab stays open.", opts:[["Correct, however joins them","no"],["Comma splice","yes"],["Fragment","no"]], why:"however is a fancy adverb, not FANBOYS. Two finished thoughts + comma = still a splice."},
-  {hack:"join", prompt:"Name this.", line:"The library closes at six; the lab stays open.", opts:[["Run-on","no"],["Comma splice","no"],["Correct","yes"]], why:"A semicolon may join two finished thoughts. Legal."}
+{hack:"finish",prompt:"Can this stand alone?",line:"The locker at the end of the hall.",opts:[["Yes \u2014 finished","no"],["No \u2014 not finished","yes"]],why:"There is a thing (locker) but no action. Not a finished thought. Fragment."},
+{hack:"finish",prompt:"Can this stand alone?",line:"The alarm rang.",opts:[["Yes \u2014 finished","yes"],["No \u2014 not finished","no"]],why:"Someone/something + action. Finished thought."},
+{hack:"hang",prompt:"What is the hanger?",line:"Although she studied for an hour.",opts:[["Although","yes"],["she studied","no"],["an hour","no"]],why:"Although makes this a setup. Those words cannot stand alone."},
+{hack:"hang",prompt:"How do you make this legal without inventing new facts?",line:"Because the bus was late.",opts:[["Drop Because \u2192 The bus was late.","yes"],["Add a comma only","no"],["Leave it","no"]],why:"Drop the hanger and the original words are already a sentence."},
+{hack:"two",prompt:"How many finished thoughts?",line:"Maya finished her essay she submitted it before midnight.",opts:[["Zero","no"],["One","no"],["Two","yes"]],why:"Maya finished her essay. She submitted it. Two finished thoughts with nothing between them = run-on."},
+{hack:"two",prompt:"How many finished thoughts?",line:"After the final bell rang.",opts:[["Zero","yes"],["One","no"],["Two","no"]],why:"After is a hanger. Zero finished thoughts. Fragment."},
+{hack:"join",prompt:"What is legal between two finished thoughts?",line:"The dog barked ___ the cat hid.",opts:[["comma only","no"],["comma + and","yes"],["however after a comma","no"]],why:"FANBOYS = For, And, Nor, But, Or, Yet, So. Comma + and is legal because and is the A in FANBOYS. A comma alone is a splice. however is not one of those seven words."},
+{hack:"join",prompt:"Name this.",line:"The rain started we ran under the awning.",opts:[["Fragment","no"],["Run-on","yes"],["Comma splice","no"],["Correct","no"]],why:"Two finished thoughts. No mark. Run-on."},
+{hack:"cover",prompt:"Cover the comma. What do you have?",line:"Lila packed her bag, she forgot her charger.",opts:[["Both sides finished \u2192 splice","yes"],["Left side unfinished \u2192 legal comma","no"]],why:"Lila packed her bag. She forgot her charger. Both stand alone. Comma only = splice."},
+{hack:"cover",prompt:"Cover the comma. What do you have?",line:"Although she studied, she still felt nervous.",opts:[["Both sides finished \u2192 splice","no"],["Left side unfinished \u2192 legal comma","yes"]],why:"Although she studied cannot stand alone. The comma attaches a hanger. Legal. Not a splice."},
+{hack:"join",prompt:"Name this.",line:"The library closes at six, however the lab stays open.",opts:[["Correct, however joins them","no"],["Comma splice","yes"],["Fragment","no"]],why:"however is a fancy adverb, not a FANBOYS word (For, And, Nor, But, Or, Yet, So). Two finished thoughts + comma = still a splice."},
+{hack:"join",prompt:"Name this.",line:"The library closes at six; the lab stays open.",opts:[["Run-on","no"],["Comma splice","no"],["Correct","yes"]],why:"A semicolon may join two finished thoughts. Legal."}
 ];
 const DRILL=TOUR.concat([
-  {hack:"two", prompt:"How many finished thoughts?", line:"Jordan likes soccer. His brother prefers baseball.", opts:[["Zero","no"],["One","no"],["Two \u2014 already split","yes"]], why:"Period already did the job. Two finished thoughts, legally split."},
-  {hack:"cover", prompt:"Cover the comma.", line:"She packed her bag, but she forgot her charger.", opts:[["Both finished + FANBOYS \u2192 legal","yes"],["Splice","no"]], why:"but is FANBOYS. Comma + but is legal."},
-  {hack:"hang", prompt:"Name this.", line:"Walking to the cafeteria after science.", opts:[["Fragment","yes"],["Run-on","no"],["Correct","no"]], why:"-ing opener with no subject+verb pair. Unfinished."},
-  {hack:"join", prompt:"Name this.", line:"I wanted to stay I had homework.", opts:[["Fragment","no"],["Run-on","yes"],["Correct","no"]], why:"Two finished thoughts, no mark."}
+{hack:"two",prompt:"How many finished thoughts?",line:"Jordan likes soccer. His brother prefers baseball.",opts:[["Zero","no"],["One","no"],["Two \u2014 already split","yes"]],why:"Period already did the job."},
+{hack:"cover",prompt:"Cover the comma.",line:"She packed her bag, but she forgot her charger.",opts:[["Both finished + but (FANBOYS word) \u2192 legal","yes"],["Splice","no"]],why:"but is the B in FANBOYS (For, And, Nor, But, Or, Yet, So). Comma + but is legal."},
+{hack:"hang",prompt:"Name this.",line:"Walking to the cafeteria after science.",opts:[["Fragment","yes"],["Run-on","no"],["Correct","no"]],why:"-ing opener with no subject+verb pair. Unfinished."},
+{hack:"join",prompt:"Name this.",line:"I wanted to stay I had homework.",opts:[["Fragment","no"],["Run-on","yes"],["Correct","no"]],why:"Two finished thoughts, no mark."}
 ]);
-let deck=[], i=0, mode="tour", locked=false, score=0, miss=[];
+let deck=[],i=0,mode="tour",locked=false,score=0,miss=[];
 function $(id){return document.getElementById(id)}
 function show(id){["home","play","results"].forEach(s=>$(s).classList.add("hidden"));$(id).classList.remove("hidden")}
 function persist(){save.xp=xp;try{localStorage.setItem(STORE,JSON.stringify(save))}catch(e){}$("xp").textContent="XP "+xp;const el=$("homeStats");if(el)el.textContent=save.quizzes?"Best check: "+save.bestPct+"%":"XP saves on this phone."}
@@ -122,6 +93,4 @@ $("nextBtn").onclick=next;
 $("retakeBtn").onclick=function(){start("quiz")};
 $("resHome").onclick=function(){show("home")};
 persist();
-</script>
-</body>
-</html>
+</script></body></html>
