@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<title>Sentence Fix v2.2</title>
+<title>Sentence Fix v2.3</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:rgba(126,224,197,.25)}
 html,body{margin:0;padding:0;background:#0e1117;color:#e8edf5;font-family:Trebuchet MS,Segoe UI,sans-serif}
@@ -23,21 +23,24 @@ button.ghost{background:transparent;border:1px solid #2a3344}
 .choices{display:grid;gap:8px;margin-top:8px}
 .choice{width:100%;text-align:left;background:#232d3f}
 .choice.correct{background:#173528}.choice.wrong{background:#3a1d24}
-.sentence{font-size:1.12rem;line-height:1.45;background:#121826;border:1px dashed #334057;border-radius:14px;padding:14px 16px;margin:12px 0}
+.sentence{font-size:1.08rem;line-height:1.45;background:#121826;border:1px dashed #334057;border-radius:14px;padding:14px 16px;margin:12px 0}
 .hack{background:#1a1710;border:1px solid #5a4a20;border-radius:14px;padding:14px;color:#f0e2b8;line-height:1.45;margin:8px 0 14px}
 .feedback{margin-top:12px;color:#9aa6b8;line-height:1.45}.feedback.good{color:#6ee7a8}.feedback.bad{color:#ff7a8a}
 .bar{height:8px;background:#243044;border-radius:99px;overflow:hidden;margin:8px 0 14px}.bar>i{display:block;height:100%;width:0;background:#7ee0c5}
 .pill{display:inline-block;font-size:.72rem;padding:3px 8px;border-radius:999px;background:#243046;color:#7ee0c5;margin-bottom:8px}
 .stat{color:#9aa6b8;font-size:.85rem}
 </style></head><body>
-<div class="wrap"><div class="ver">v2.2</div>
-<header class="app"><div class="brand"><div class="logo">SF</div><div><h1>Sentence Fix</h1><div class="sub">Brain hacks • v2.2</div></div></div><div class="xp" id="xp">XP 0</div></header>
-<section id="home" class="card"><span class="pill">Foundation first</span>
-<p>Do not memorize a rewrite. Learn the test. Drill and quiz now use new lines.</p>
-<button type="button" class="primary" style="width:100%;margin:8px 0" id="teachBtn">Teach me everything</button>
-<button type="button" class="ghost" style="width:100%" id="drillBtn">Fresh concept drill</button>
-<button type="button" class="ghost" style="width:100%;margin-top:8px" id="quizBtn">Graded check (10 new)</button>
-<p class="stat" id="homeStats"></p></section>
+<div class="wrap"><div class="ver">v2.3</div>
+<header class="app"><div class="brand"><div class="logo">SF</div><div><h1>Sentence Fix</h1><div class="sub">Class terms • v2.3</div></div></div><div class="xp" id="xp">XP 0</div></header>
+<section id="home" class="card">
+<span class="pill">Same words as class</span>
+<p>Combine sentences the way the poster teaches. Then spot run-ons and fragments.</p>
+<button type="button" class="primary" style="width:100%;margin:8px 0" id="combineBtn">Combining sentences</button>
+<button type="button" class="ghost" style="width:100%" id="teachBtn">Fragments, run-ons, splices</button>
+<button type="button" class="ghost" style="width:100%;margin-top:8px" id="drillBtn">Mixed drill</button>
+<button type="button" class="ghost" style="width:100%;margin-top:8px" id="quizBtn">Graded check (10)</button>
+<p class="stat" id="homeStats"></p>
+</section>
 <section id="play" class="card hidden"><div class="stat" id="meta"></div><div class="bar"><i id="bar"></i></div><div id="hackBox" class="hack"></div><div id="prompt" class="sentence"></div><div id="choices" class="choices"></div><div id="feed" class="feedback"></div>
 <div class="row" style="margin-top:12px"><button type="button" class="ghost" id="homeBtn">Home</button><button type="button" class="primary" id="nextBtn" disabled>Next</button></div></section>
 <section id="results" class="card hidden"><span class="pill">Check results</span><div id="finalScore" style="font-size:2.4rem;font-weight:800"></div><p id="finalMsg"></p><div id="missList"></div>
@@ -48,51 +51,62 @@ let save={xp:0,bestPct:0,quizzes:0};
 try{const raw=localStorage.getItem(STORE);if(raw)save=Object.assign(save,JSON.parse(raw))}catch(e){}
 let xp=save.xp||0;
 const HACKS={
-finish:"<b>Hack 1 \u2014 Finished thought.</b> Can this stand alone? Need someone/something + what they do.",
-hang:"<b>Hack 2 \u2014 School names.</b> A hanger is a <b>subordinating conjunction</b> (because, when, if, although, after, since, while, unless). It starts a <b>dependent clause</b> that cannot stand alone. That is a fragment. A <b>conjunctive adverb</b> is different: however, therefore, consequently, then. Those do not make a fragment. They also are not FANBOYS.",
-two:"<b>Hack 3 \u2014 Count the thoughts.</b> 0 finished = fragment. 1 finished (maybe with a hanger attached) can be legal. 2 finished must be joined legally.",
-join:"<b>Hack 4 \u2014 Legal join.</b> Two finished thoughts: period, semicolon, or comma + FANBOYS (<b>F</b>or, <b>A</b>nd, <b>N</b>or, <b>B</b>ut, <b>O</b>r, <b>Y</b>et, <b>S</b>o). however / therefore / then are conjunctive adverbs, not FANBOYS.",
-cover:"<b>Hack 5 \u2014 Cover the comma.</b> Both sides stand alone = splice. One side cannot stand alone = legal comma after a dependent clause."
+sub:"<b>Compound subjects.</b> Two who/whats share one action. Amber is my cousin. Kaleb is my cousin. → Amber and Kaleb are my cousins.",
+pred:"<b>Compound predicates.</b> One who does two actions. Dad washed the car. Dad polished the car. → Dad washed and polished the car.",
+compound:"<b>Compound sentence.</b> Two finished thoughts joined by a <b>coordinating conjunction</b>: for, and, nor, but, or, yet, so (class memory trick: FANBOYS). Need a comma before that word: …card, but I didn’t have…",
+complex:"<b>Complex sentence.</b> One finished thought + a <b>subordinating conjunction</b> (because, when, if, although, after, since). That extra part is a <b>dependent clause</b>. Because at the end usually needs no comma. Because at the start needs a comma.",
+app:"<b>Appositive.</b> A rename tucked next to a noun, set off with commas: Ali’s mom, a nurse, works the night shift.",
+phrase:"<b>Reduce to a phrase.</b> Turn one whole sentence into a leftover phrase: The baby, scared by the blaring music, began to cry.",
+finish:"<b>Finished thought.</b> Someone/something + action that can stand alone.",
+hang:"<b>Dependent clause.</b> Starts with a subordinating conjunction (because, when, if, although, after, since, unless). Alone = fragment. A <b>conjunctive adverb</b> (however, therefore) is different — not a combiner with only a comma.",
+two:"<b>Count finished thoughts.</b> 0 = fragment. 1 can be legal. 2 need a legal join or they are a run-on / comma splice.",
+join:"<b>Legal join for two finished thoughts.</b> Period. Semicolon. Or comma + coordinating conjunction (for, and, nor, but, or, yet, so). however / therefore are conjunctive adverbs, not coordinating conjunctions.",
+cover:"<b>Cover the comma.</b> Both sides finished = comma splice. Left side is a dependent clause = legal complex sentence."
 };
+const COMBINE=[
+{hack:"sub",prompt:"Class tool: compound subjects. Pick the combine.",line:"Amber is my cousin. Kaleb is also my cousin.",opts:[["Amber and Kaleb are my cousins.","yes"],["Amber is my cousin, Kaleb is also my cousin.","no"],["Amber is my cousin Kaleb is also my cousin.","no"]],why:"Two cousins share one verb. Compound subjects. The comma-only version is a comma splice. No mark is a run-on."},
+{hack:"pred",prompt:"Class tool: compound predicates. Pick the combine.",line:"Dad washed the car. Then, he polished the car.",opts:[["Dad washed and polished the car.","yes"],["Dad washed the car, he polished the car.","no"],["Washed the car.","no"]],why:"One person, two actions joined by and. That is a compound predicate. Comma only would be a splice. Washed the car. is a fragment."},
+{hack:"compound",prompt:"Class tool: compound sentence. Pick the combine.",line:"I wanted to buy you a card. I didn’t have enough money with me.",opts:[["I wanted to buy you a card, but I didn’t have enough money with me.","yes"],["I wanted to buy you a card, I didn’t have enough money with me.","no"],["I wanted to buy you a card I didn’t have enough money with me.","no"]],why:"Two finished thoughts + comma + but. but is a coordinating conjunction. Comma alone = splice. No mark = run-on."},
+{hack:"compound",prompt:"School name for but here?",line:"I wanted to buy you a card, but I didn’t have enough money with me.",opts:[["Coordinating conjunction — compound sentence","yes"],["Subordinating conjunction — complex sentence","no"],["Appositive","no"]],why:"but joins two finished thoughts. Coordinating conjunction. Class name for the whole sentence: compound sentence."},
+{hack:"complex",prompt:"Class tool: complex sentence. Pick the combine.",line:"The boy didn’t understand her directions. The boy didn’t speak English.",opts:[["The boy didn’t understand her directions because he didn’t speak English.","yes"],["The boy didn’t understand her directions, the boy didn’t speak English.","no"],["Because the boy didn’t speak English.","no"]],why:"because is a subordinating conjunction. Dependent clause at the end — no comma. That is a complex sentence. Because… by itself is a fragment."},
+{hack:"complex",prompt:"School name for because here?",line:"The boy didn’t understand her directions because he didn’t speak English.",opts:[["Subordinating conjunction — complex sentence","yes"],["Coordinating conjunction — compound sentence","no"],["Conjunctive adverb","no"]],why:"because starts a dependent clause. Subordinating conjunction. Whole sentence: complex."},
+{hack:"app",prompt:"Class tool: appositive. Pick the combine.",line:"Ali’s mom is a nurse. Ali’s mom works the night shift.",opts:[["Ali’s mom, a nurse, works the night shift.","yes"],["Ali’s mom is a nurse, Ali’s mom works the night shift.","no"],["Ali’s mom a nurse works the night shift.","no"]],why:"a nurse renames mom. That rename is an appositive and needs both commas. Comma between two finished thoughts is a splice."},
+{hack:"phrase",prompt:"Class tool: reduce one sentence to a phrase.",line:"The baby was scared by the blaring music. The baby began to cry.",opts:[["The baby, scared by the blaring music, began to cry.","yes"],["The baby was scared by the blaring music, the baby began to cry.","no"],["Scared by the blaring music.","no"]],why:"The scare-sentence shrinks to a phrase. Alone, that phrase is a fragment. Comma between two full sentences is a splice."},
+{hack:"complex",prompt:"Dependent clause first — what is legal?",line:"Because he didn’t speak English, the boy didn’t understand.",opts:[["Legal complex sentence (comma after the dependent clause)","yes"],["Comma splice","no"],["Fragment","no"]],why:"Because-clause cannot stand alone, so the comma is legal. Cover the comma: left side unfinished."}
+];
 const TOUR=[
-{hack:"finish",prompt:"Can this stand alone?",line:"The locker at the end of the hall.",opts:[["Yes \u2014 finished","no"],["No \u2014 not finished","yes"]],why:"Thing named, no action. Fragment."},
-{hack:"finish",prompt:"Can this stand alone?",line:"The alarm rang.",opts:[["Yes \u2014 finished","yes"],["No \u2014 not finished","no"]],why:"Something + action. Finished thought."},
-{hack:"hang",prompt:"School name for Although?",line:"Although she studied for an hour.",opts:[["Subordinating conjunction","yes"],["Conjunctive adverb","no"],["FANBOYS word","no"]],why:"Although is a subordinating conjunction. It makes a dependent clause. Not however-style. Not FANBOYS."},
-{hack:"hang",prompt:"How do you make this legal without new facts?",line:"Because the bus was late.",opts:[["Drop Because \u2192 The bus was late.","yes"],["Add a comma only","no"],["Leave it","no"]],why:"Drop the subordinating conjunction. The leftover words are already a sentence."},
-{hack:"two",prompt:"How many finished thoughts?",line:"Maya finished her essay she submitted it before midnight.",opts:[["Zero","no"],["One","no"],["Two","yes"]],why:"Two finished thoughts, no mark = run-on."},
-{hack:"two",prompt:"How many finished thoughts?",line:"After the final bell rang.",opts:[["Zero","yes"],["One","no"],["Two","no"]],why:"After is a subordinating conjunction. Zero finished thoughts. Fragment."},
-{hack:"join",prompt:"What is legal between two finished thoughts?",line:"The dog barked ___ the cat hid.",opts:[["comma only","no"],["comma + and","yes"],["however after a comma","no"]],why:"and is the A in FANBOYS. however is a conjunctive adverb, not FANBOYS."},
-{hack:"join",prompt:"Name this.",line:"The rain started we ran under the awning.",opts:[["Fragment","no"],["Run-on","yes"],["Comma splice","no"],["Correct","no"]],why:"Two finished thoughts. No mark. Run-on."},
-{hack:"cover",prompt:"Cover the comma.",line:"Lila packed her bag, she forgot her charger.",opts:[["Both sides finished \u2192 splice","yes"],["Left side unfinished \u2192 legal comma","no"]],why:"Both sides stand alone. Comma only = splice."},
-{hack:"cover",prompt:"Cover the comma.",line:"Although she studied, she still felt nervous.",opts:[["Both sides finished \u2192 splice","no"],["Left side unfinished \u2192 legal comma","yes"]],why:"Although she studied cannot stand alone. Legal complex sentence."},
-{hack:"join",prompt:"School name for however?",line:"The library closes at six, however the lab stays open.",opts:[["Conjunctive adverb \u2014 still a splice here","yes"],["Subordinating conjunction","no"],["FANBOYS word","no"]],why:"however is a conjunctive adverb. It does not join with a comma. Still a splice."},
-{hack:"join",prompt:"Name this.",line:"The library closes at six; the lab stays open.",opts:[["Run-on","no"],["Comma splice","no"],["Correct","yes"]],why:"A semicolon may join two finished thoughts."}
+{hack:"finish",prompt:"Can this stand alone?",line:"The locker at the end of the hall.",opts:[["Yes — finished","no"],["No — not finished","yes"]],why:"No action. Fragment."},
+{hack:"finish",prompt:"Can this stand alone?",line:"The alarm rang.",opts:[["Yes — finished","yes"],["No — not finished","no"]],why:"Something + action. Finished thought."},
+{hack:"hang",prompt:"School name for Although?",line:"Although she studied for an hour.",opts:[["Subordinating conjunction — fragment if left alone","yes"],["Coordinating conjunction","no"],["Appositive","no"]],why:"Although starts a dependent clause. Alone it is a fragment."},
+{hack:"two",prompt:"How many finished thoughts?",line:"The bell rang students packed their bags.",opts:[["Zero","no"],["One","no"],["Two","yes"]],why:"Two finished thoughts, no mark = run-on."},
+{hack:"cover",prompt:"Cover the comma.",line:"The cafeteria was closed, we ate outside.",opts:[["Both sides finished → comma splice","yes"],["Left side unfinished → complex sentence","no"]],why:"Both sides stand alone. Comma only = splice."},
+{hack:"cover",prompt:"Cover the comma.",line:"If the rain stops, we will walk home.",opts:[["Both sides finished → comma splice","no"],["Left side unfinished → complex sentence","yes"]],why:"If the rain stops is a dependent clause. Legal complex sentence."},
+{hack:"join",prompt:"School name for however?",line:"The homework is due tomorrow, therefore I am starting now.",opts:[["Conjunctive adverb — still a comma splice","yes"],["Coordinating conjunction","no"],["Subordinating conjunction","no"]],why:"therefore / however are conjunctive adverbs. They do not join with only a comma."},
+{hack:"join",prompt:"Name this.",line:"Nico wanted pizza, yet the shop was closed.",opts:[["Compound sentence","yes"],["Complex sentence","no"],["Comma splice","no"]],why:"yet is a coordinating conjunction. Two finished thoughts + comma + yet = compound sentence."}
 ];
 const FRESH=[
-{hack:"finish",prompt:"Can this stand alone?",line:"A pile of notebooks on the third shelf.",opts:[["Yes \u2014 finished","no"],["No \u2014 not finished","yes"]],why:"Noun pile. No verb. Fragment."},
-{hack:"finish",prompt:"Can this stand alone?",line:"Nico shut the laptop.",opts:[["Yes \u2014 finished","yes"],["No \u2014 not finished","no"]],why:"Nico + shut. Finished thought."},
-{hack:"hang",prompt:"School name for Unless?",line:"Unless we leave now.",opts:[["Subordinating conjunction \u2014 fragment","yes"],["Conjunctive adverb","no"],["Correct sentence","no"]],why:"Unless starts a dependent clause. Cannot stand alone. Fragment."},
-{hack:"hang",prompt:"School name for Since?",line:"Since the wifi dropped.",opts:[["Subordinating conjunction \u2014 fragment","yes"],["FANBOYS word","no"],["Finished sentence","no"]],why:"Since here means because. Subordinating conjunction. Fragment."},
-{hack:"two",prompt:"How many finished thoughts?",line:"The bell rang students packed their bags.",opts:[["Zero","no"],["One","no"],["Two","yes"]],why:"The bell rang. Students packed their bags. Two finished thoughts, no mark = run-on."},
-{hack:"two",prompt:"How many finished thoughts?",line:"Before the quiz started.",opts:[["Zero","yes"],["One","no"],["Two","no"]],why:"Before is a subordinating conjunction. Zero finished thoughts. Fragment."},
-{hack:"join",prompt:"Name this.",line:"Turn in the form keep a copy for yourself.",opts:[["Fragment","no"],["Run-on","yes"],["Correct","no"]],why:"Two commands, each finished. No mark. Run-on."},
-{hack:"cover",prompt:"Cover the comma.",line:"The cafeteria was closed, we ate outside.",opts:[["Both sides finished \u2192 splice","yes"],["Left side unfinished \u2192 legal comma","no"]],why:"The cafeteria was closed. We ate outside. Comma only = splice."},
-{hack:"cover",prompt:"Cover the comma.",line:"If the rain stops, we will walk home.",opts:[["Both sides finished \u2192 splice","no"],["Left side unfinished \u2192 legal comma","yes"]],why:"If the rain stops cannot stand alone. Legal complex sentence."},
-{hack:"join",prompt:"Name this.",line:"The homework is due tomorrow, therefore I am starting now.",opts:[["Correct","no"],["Comma splice","yes"],["Fragment","no"]],why:"therefore is a conjunctive adverb, not FANBOYS. Two finished thoughts + comma = splice."},
-{hack:"join",prompt:"Name this.",line:"Nico wanted pizza, yet the shop was closed.",opts:[["Comma splice","no"],["Run-on","no"],["Correct","yes"]],why:"yet is the Y in FANBOYS (For, And, Nor, But, Or, Yet, So). Comma + yet is legal."},
-{hack:"join",prompt:"Name this.",line:"The gym was locked; however, we practiced outside.",opts:[["Comma splice","no"],["Correct","yes"],["Fragment","no"]],why:"Semicolon + conjunctive adverb however is legal. A comma before however would be a splice."}
+{hack:"finish",prompt:"Can this stand alone?",line:"A pile of notebooks on the third shelf.",opts:[["Yes — finished","no"],["No — not finished","yes"]],why:"No verb. Fragment."},
+{hack:"hang",prompt:"School name for Unless?",line:"Unless we leave now.",opts:[["Subordinating conjunction — fragment","yes"],["Coordinating conjunction","no"],["Correct sentence","no"]],why:"Unless starts a dependent clause. Fragment."},
+{hack:"two",prompt:"How many finished thoughts?",line:"Turn in the form keep a copy for yourself.",opts:[["Zero","no"],["One","no"],["Two","yes"]],why:"Two commands. No mark. Run-on."},
+{hack:"join",prompt:"Name this.",line:"The gym was locked; however, we practiced outside.",opts:[["Legal — semicolon + conjunctive adverb","yes"],["Comma splice","no"],["Fragment","no"]],why:"Semicolon before however is legal. A comma before however would be a splice."},
+{hack:"sub",prompt:"Compound subjects — pick the combine.",line:"Rio plays cello. Mina plays cello.",opts:[["Rio and Mina play cello.","yes"],["Rio plays cello, Mina plays cello.","no"],["Rio plays cello Mina plays cello.","no"]],why:"Two subjects, one action. Comma only = splice."},
+{hack:"pred",prompt:"Compound predicates — pick the combine.",line:"Sam stacked the chairs. Sam swept the floor.",opts:[["Sam stacked the chairs and swept the floor.","yes"],["Sam stacked the chairs, Sam swept the floor.","no"],["Stacked the chairs.","no"]],why:"One subject, two actions joined by and."},
+{hack:"app",prompt:"Appositive — pick the combine.",line:"Mr. Hale is our coach. Mr. Hale canceled practice.",opts:[["Mr. Hale, our coach, canceled practice.","yes"],["Mr. Hale is our coach, Mr. Hale canceled practice.","no"],["Our coach.","no"]],why:"our coach renames Mr. Hale. Appositive needs both commas."}
 ];
-let deck=[],i=0,mode="tour",locked=false,score=0,miss=[];
+const MIX=COMBINE.concat(TOUR,FRESH);
+let deck=[],i=0,mode="combine",locked=false,score=0,miss=[];
 function $(id){return document.getElementById(id)}
 function show(id){["home","play","results"].forEach(s=>$(s).classList.add("hidden"));$(id).classList.remove("hidden")}
 function persist(){save.xp=xp;try{localStorage.setItem(STORE,JSON.stringify(save))}catch(e){}$("xp").textContent="XP "+xp;const el=$("homeStats");if(el)el.textContent=save.quizzes?"Best check: "+save.bestPct+"%":"XP saves on this phone."}
 function addXP(n){xp+=n;persist()}
 function shuffle(a){const arr=a.slice();for(let x=arr.length-1;x>0;x--){const j=Math.floor(Math.random()*(x+1));[arr[x],arr[j]]=[arr[j],arr[x]]}return arr}
-function start(which){mode=which;i=0;score=0;miss=[];locked=false;deck=which==="tour"?TOUR.slice():which==="quiz"?shuffle(FRESH).slice(0,10):shuffle(FRESH);show("play");render()}
-function render(){const q=deck[i];$("meta").textContent=(mode==="tour"?"Hack tour ":"Q ")+(i+1)+" / "+deck.length;$("bar").style.width=(i/deck.length*100)+"%";$("hackBox").innerHTML=HACKS[q.hack];$("prompt").innerHTML="<b>"+q.prompt+"</b><br>"+q.line;$("feed").textContent="";$("feed").className="feedback";$("nextBtn").disabled=true;locked=false;$("nextBtn").textContent=i===deck.length-1?(mode==="quiz"?"See score":"Done"):"Next";const box=$("choices");box.innerHTML="";q.opts.forEach(function(pair){const b=document.createElement("button");b.type="button";b.className="choice";b.textContent=pair[0];b.onclick=function(){grade(q,pair[1]==="yes",b)};box.appendChild(b)})}
+function start(which){mode=which;i=0;score=0;miss=[];locked=false;if(which==="combine")deck=COMBINE.slice();else if(which==="tour")deck=TOUR.slice();else if(which==="quiz")deck=shuffle(MIX).slice(0,10);else deck=shuffle(MIX);show("play");render()}
+function label(){return mode==="combine"?"Combine ":mode==="tour"?"Error hacks ":"Q "}
+function render(){const q=deck[i];$("meta").textContent=label()+(i+1)+" / "+deck.length;$("bar").style.width=(i/deck.length*100)+"%";$("hackBox").innerHTML=HACKS[q.hack];$("prompt").innerHTML="<b>"+q.prompt+"</b><br>"+q.line;$("feed").textContent="";$("feed").className="feedback";$("nextBtn").disabled=true;locked=false;$("nextBtn").textContent=i===deck.length-1?(mode==="quiz"?"See score":"Done"):"Next";const box=$("choices");box.innerHTML="";q.opts.forEach(function(pair){const b=document.createElement("button");b.type="button";b.className="choice";b.textContent=pair[0];b.onclick=function(){grade(q,pair[1]==="yes",b)};box.appendChild(b)})}
 function grade(q,good,btn){if(locked)return;locked=true;if(good){btn.classList.add("correct");$("feed").textContent=q.why;$("feed").className="feedback good";addXP(mode==="quiz"?15:10);if(mode==="quiz")score++}else{btn.classList.add("wrong");[].forEach.call($("choices").children,function(b,idx){if(q.opts[idx][1]==="yes")b.classList.add("correct")});$("feed").textContent=q.why;$("feed").className="feedback bad";addXP(2);if(mode==="quiz")miss.push({line:q.line,why:q.why})}$("nextBtn").disabled=false}
 function next(){if(i<deck.length-1){i++;render()}else if(mode==="quiz")finish();else{$("bar").style.width="100%";show("home");persist()}}
-function finish(){const pct=Math.round(score/deck.length*100);let letter="F";if(pct>=90)letter="A";else if(pct>=80)letter="B";else if(pct>=70)letter="C";else if(pct>=60)letter="D";$("finalScore").textContent=pct+"%  "+letter;$("finalMsg").textContent=score+" / "+deck.length+" new-line checks.";$("missList").innerHTML=miss.length?miss.map(function(m){return "<p><b>"+m.line+"</b><br>"+m.why+"</p>"}).join(""):"<p>No misses.</p>";addXP(pct>=70?40:10);save.quizzes=(save.quizzes||0)+1;if(pct>(save.bestPct||0))save.bestPct=pct;persist();show("results")}
+function finish(){const pct=Math.round(score/deck.length*100);let letter="F";if(pct>=90)letter="A";else if(pct>=80)letter="B";else if(pct>=70)letter="C";else if(pct>=60)letter="D";$("finalScore").textContent=pct+"%  "+letter;$("finalMsg").textContent=score+" / "+deck.length;$("missList").innerHTML=miss.length?miss.map(function(m){return "<p><b>"+m.line+"</b><br>"+m.why+"</p>"}).join(""):"<p>No misses.</p>";addXP(pct>=70?40:10);save.quizzes=(save.quizzes||0)+1;if(pct>(save.bestPct||0))save.bestPct=pct;persist();show("results")}
+$("combineBtn").onclick=function(){start("combine")};
 $("teachBtn").onclick=function(){start("tour")};
 $("drillBtn").onclick=function(){start("drill")};
 $("quizBtn").onclick=function(){start("quiz")};
