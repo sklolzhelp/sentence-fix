@@ -1,1 +1,103 @@
-<!DOCTYPE html>SEE_FILE
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Sentence Fix v1.3</title>
+<style>
+:root{--bg:#0e1117;--panel:#171c26;--panel2:#1e2533;--line:#2a3344;--text:#e8edf5;--muted:#9aa6b8;--accent:#7ee0c5;--accent2:#8bb4ff;--gold:#ffd166;--good:#6ee7a8;--bad:#ff7a8a;--radius:18px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:rgba(126,224,197,.25)}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Trebuchet MS,Segoe UI,sans-serif}
+body{min-height:100dvh;background:var(--bg)}
+.wrap{max-width:760px;margin:0 auto;padding:16px 14px 40px}
+.ver{font-size:10px;color:#6e7b90;margin:0 0 8px}
+header.app{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#7ee0c5,#8bb4ff);display:grid;place-items:center;font-weight:800;color:#0b1220}
+h1{font-size:1.15rem;margin:0}.sub{color:#9aa6b8;font-size:.82rem}
+.xp{border:1px solid #2a3344;border-radius:999px;padding:7px 12px;color:#ffd166}
+.card{background:#171c26;border:1px solid #2a3344;border-radius:18px;padding:18px}
+.hidden{display:none!important}.row{display:flex;gap:8px;flex-wrap:wrap}
+button{appearance:none;border:0;background:#2a3548;color:#e8edf5;border-radius:12px;padding:12px 14px;font:inherit;touch-action:manipulation}
+button.primary{background:linear-gradient(135deg,#6ee7c3,#7eb6ff);color:#0b1220;font-weight:800}
+button.ghost{background:transparent;border:1px solid #2a3344}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.grid2{grid-template-columns:1fr}}
+.tile{text-align:left;padding:16px;border-radius:16px;background:#202838;border:2px solid #2a3344}
+.tile b{display:block}.tile span{color:#9aa6b8;font-size:.86rem;display:block}
+.tile.on{background:#16352f;border-color:#7ee0c5}
+.sentence{font-size:1.15rem;background:#121826;border:1px dashed #334057;border-radius:14px;padding:14px 16px;margin:12px 0}
+.choices{display:grid;gap:8px}.choice{width:100%;text-align:left;background:#232d3f}
+.choice.correct{background:#173528}.choice.wrong{background:#3a1d24}
+.feedback{margin-top:12px;color:#9aa6b8}.feedback.good{color:#6ee7a8}.feedback.bad{color:#ff7a8a}
+.bar{height:8px;background:#243044;border-radius:99px;overflow:hidden;margin:8px 0 14px}.bar>i{display:block;height:100%;width:0;background:#7ee0c5}
+.hack-btn{margin-top:10px;width:100%;background:#2a2416;color:#ffd166}
+.hack-box{display:none;margin-top:10px;padding:12px;background:#1a1710;color:#f0e2b8}.hack-box.open{display:block}
+.pill{display:inline-block;font-size:.72rem;padding:3px 8px;border-radius:999px;background:#243046;color:#7ee0c5}
+</style></head><body>
+<div class="wrap"><div class="ver">v1.3</div>
+<header class="app"><div class="brand"><div class="logo">SF</div><div><h1>Sentence Fix</h1><div class="sub">7th grade • v1.3</div></div></div><div class="xp" id="xp">XP 0</div></header>
+<section id="home" class="card"><span class="pill">How do you want to learn?</span>
+<p>Spot fragments, run-ons, and comma splices.</p>
+<p id="styleNow">Selected style: Label it</p>
+<div class="grid2" id="styleGrid">
+<button type="button" class="tile on" data-style="label"><b>Label it</b><span>Name the error.</span></button>
+<button type="button" class="tile" data-style="fix"><b>Fix it</b><span>Same sentence. Pick the legal version.</span></button>
+<button type="button" class="tile" data-style="ear"><b>Use your ear</b><span>Finished or broken?</span></button>
+<button type="button" class="tile" data-style="sort"><b>Sort bins</b><span>Tap the bucket.</span></button>
+</div>
+<p>Topic</p>
+<div class="grid2" id="topicGrid">
+<button type="button" class="tile" data-topic="fragment"><b>Fragments</b></button>
+<button type="button" class="tile" data-topic="runon"><b>Run-ons</b></button>
+<button type="button" class="tile" data-topic="splice"><b>Comma splices</b></button>
+<button type="button" class="tile" data-topic="mix"><b>Mixed</b></button>
+</div>
+<button type="button" class="primary" style="width:100%;margin-top:14px" id="quizBtn">Graded quiz</button>
+<p id="homeStats"></p></section>
+<section id="learn" class="card hidden"><div id="learnMeta"></div><div class="bar"><i id="learnBar"></i></div><div id="lessonBox"></div><div id="learnPrompt" class="sentence"></div><div id="learnChoices" class="choices"></div><div id="learnFeed" class="feedback"></div>
+<button type="button" class="hack-btn hidden" id="learnHackBtn">Want to know a hack?</button><div class="hack-box" id="learnHackBox"></div>
+<div class="row"><button type="button" class="ghost" id="learnHome">Home</button><button type="button" class="primary" id="learnNext" disabled>Next</button></div></section>
+<section id="quiz" class="card hidden"><div id="quizMeta"></div><div class="bar"><i id="quizBar"></i></div><div id="quizPrompt" class="sentence"></div><div id="quizChoices" class="choices"></div><div id="quizFeed" class="feedback"></div>
+<button type="button" class="hack-btn hidden" id="quizHackBtn">Want to know a hack?</button><div class="hack-box" id="learnHackBox2"></div><div class="hack-box" id="quizHackBox"></div>
+<div class="row"><button type="button" class="ghost" id="quizQuit">Quit</button><button type="button" class="primary" id="quizNext" disabled>Next</button></div></section>
+<section id="results" class="card hidden"><span class="pill">Quiz results</span><div id="finalScore" style="font-size:3rem;font-weight:800"></div><p id="finalMsg"></p><div id="missList"></div>
+<div class="row"><button type="button" class="primary" id="retakeBtn">New quiz</button><button type="button" class="ghost" id="resultsHome">Home</button></div></section>
+</div>
+<script>
+const ITEMS=[{q:"Maya finished her essay she submitted it before midnight.",type:"RO",why:"Two sentences with no mark between them.",fix:"Maya finished her essay. She submitted it before midnight.",bad:["Maya finished her essay she submitted it before midnight.","Maya finished her essay, she submitted it before midnight."]},{q:"I wanted to stay I had homework.",type:"RO",why:"Two complete thoughts smashed together.",fix:"I wanted to stay, but I had homework.",bad:["I wanted to stay I had homework.","I wanted to stay, I had homework."]},{q:"The rain started we ran under the awning.",type:"RO",why:"No mark between the two clauses.",fix:"The rain started. We ran under the awning.",bad:["The rain started we ran under the awning.","The rain started, we ran under the awning."]},{q:"Jordan likes soccer his brother prefers baseball.",type:"RO",why:"Two subject-verb pairs, no break.",fix:"Jordan likes soccer. His brother prefers baseball.",bad:["Jordan likes soccer his brother prefers baseball.","Jordan likes soccer, his brother prefers baseball."]},{q:"The alarm rang nobody moved.",type:"RO",why:"Fused sentences.",fix:"The alarm rang, but nobody moved.",bad:["The alarm rang nobody moved.","The alarm rang, nobody moved."]},{q:"The storm knocked out power, we used flashlights.",type:"CS",why:"A comma alone cannot join two sentences.",fix:"The storm knocked out power, so we used flashlights.",bad:["The storm knocked out power, we used flashlights.","The storm knocked out power we used flashlights."]},{q:"Lila packed her bag, she forgot her charger.",type:"CS",why:"Two sentences, only a comma.",fix:"Lila packed her bag, but she forgot her charger.",bad:["Lila packed her bag, she forgot her charger.","Lila packed her bag she forgot her charger."]},{q:"I like tacos, they are easy to make.",type:"CS",why:"Comma splice.",fix:"I like tacos. They are easy to make.",bad:["I like tacos, they are easy to make.","I like tacos they are easy to make."]},{q:"The library closes at six, however the lab stays open.",type:"CS",why:"However is not FANBOYS.",fix:"The library closes at six; however, the lab stays open.",bad:["The library closes at six, however the lab stays open.","The library closes at six however the lab stays open."]},{q:"Because the bus was late.",type:"F",why:"A because-clause is not a finished sentence.",fix:"Because the bus was late, we missed warm-ups.",bad:["Because the bus was late.","Because the bus was late. We missed warm-ups."]},{q:"When the teacher asked for volunteers.",type:"F",why:"A when-clause needs a result.",fix:"When the teacher asked for volunteers, Maya raised her hand.",bad:["When the teacher asked for volunteers.","When the teacher asked for volunteers. Maya raised her hand."]},{q:"The locker at the end of the hall.",type:"F",why:"A noun pile with no verb.",fix:"The locker at the end of the hall is jammed.",bad:["The locker at the end of the hall.","The locker, at the end of the hall."]},{q:"Although she studied for an hour.",type:"F",why:"Although needs a main clause.",fix:"Although she studied for an hour, she still felt nervous.",bad:["Although she studied for an hour.","Although she studied for an hour. She still felt nervous."]},{q:"The dog barked, and the cat hid under the couch.",type:"C",why:"Comma + and (FANBOYS) is legal.",fix:"The dog barked, and the cat hid under the couch.",bad:["The dog barked the cat hid under the couch.","The dog barked, the cat hid under the couch."]},{q:"Jordan likes soccer. His brother prefers baseball.",type:"C",why:"Two clean sentences.",fix:"Jordan likes soccer. His brother prefers baseball.",bad:["Jordan likes soccer his brother prefers baseball.","Jordan likes soccer, his brother prefers baseball."]},{q:"Because the bus was late, we missed warm-ups.",type:"C",why:"Because plus a result.",fix:"Because the bus was late, we missed warm-ups.",bad:["Because the bus was late.","Because the bus was late we missed warm-ups."]},{q:"She packed her bag, but she forgot her charger.",type:"C",why:"Comma + but is legal.",fix:"She packed her bag, but she forgot her charger.",bad:["She packed her bag she forgot her charger.","She packed her bag, she forgot her charger."]},{q:"The library closes at six; the lab stays open.",type:"C",why:"A semicolon may join two sentences.",fix:"The library closes at six; the lab stays open.",bad:["The library closes at six the lab stays open.","The library closes at six, the lab stays open."]}];
+const LESSONS={fragment:{title:"Fragments",html:"<p>A <b>fragment</b> is unfinished.</p>"},runon:{title:"Run-ons",html:"<p>A <b>run-on</b> slams two sentences with no mark.</p>"},splice:{title:"Comma splices",html:"<p>A <b>comma splice</b> uses only a comma.</p>"},mix:{title:"Mixed",html:"<p>All three mixed.</p>"}};
+const LABEL={F:"Fragment",RO:"Run-on",CS:"Comma splice",C:"Correct"};
+const HACKS={F:"<b>Hack:</b> If it feels unfinished, it is a fragment.",RO:"<b>Hack:</b> Two period spots with nothing between = run-on.",CS:"<b>Hack:</b> Cover the comma. Two full sentences = splice.",C:"<b>Hack:</b> Legal: period, semicolon, or comma + FANBOYS."};
+const STORE="sentenceFixSave_v2";
+let save={xp:0,bestPct:0,quizzes:0};try{const raw=localStorage.getItem(STORE);if(raw)save=Object.assign(save,JSON.parse(raw))}catch(e){}
+let xp=save.xp||0,style="label",learnItems=[],learnI=0,learnMode="fragment",answered=false,quizItems=[],quizI=0,quizScore=0,quizMiss=[],quizAnswered=false;
+function $(id){return document.getElementById(id)}
+function show(id){["home","learn","quiz","results"].forEach(s=>$(s).classList.add("hidden"));$(id).classList.remove("hidden")}
+function shuffle(a){const arr=a.slice();for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function persist(){save.xp=xp;try{localStorage.setItem(STORE,JSON.stringify(save))}catch(e){}$("xp").textContent="XP "+xp;const el=$("homeStats");if(el)el.textContent=save.quizzes?"Best quiz: "+save.bestPct+"%":"XP saves on this phone."}
+function addXP(n){xp+=n;persist()}
+function goHome(){persist();show("home")}
+function styleName(){return {label:"Label it",fix:"Fix it",ear:"Use your ear",sort:"Sort bins"}[style]}
+function pickStyle(s){style=s;document.querySelectorAll("#styleGrid .tile").forEach(t=>t.classList.toggle("on",t.getAttribute("data-style")===s));$("styleNow").textContent="Selected style: "+styleName()}
+function toggleHack(w){$(w+"HackBox").classList.toggle("open")}
+function showHack(w,t){$(w+"HackBtn").classList.remove("hidden");$(w+"HackBox").className="hack-box";$(w+"HackBox").innerHTML=HACKS[t]}
+function hideHack(w){$(w+"HackBtn").classList.add("hidden");$(w+"HackBox").className="hack-box";$(w+"HackBox").innerHTML=""}
+function byType(t){return ITEMS.filter(i=>i.type===t)}
+function poolFor(topic){if(topic==="mix")return ITEMS.slice();return byType(topic==="fragment"?"F":topic==="runon"?"RO":"CS").concat(byType("C"))}
+function explain(item){return item.type==="C"?item.why+" Already correct — no change needed.":item.why+" Legal version: "+item.fix}
+function startLearn(mode){learnMode=mode;learnItems=shuffle(poolFor(mode)).slice(0,8);learnI=0;$("lessonBox").innerHTML="<h2>"+LESSONS[mode].title+"</h2>"+LESSONS[mode].html;show("learn");renderLearn()}
+function renderLearn(){const item=learnItems[learnI];$("learnMeta").textContent="Round "+(learnI+1)+" of "+learnItems.length;$("learnBar").style.width=(learnI/learnItems.length*100)+"%";$("learnFeed").textContent="";$("learnFeed").className="feedback";hideHack("learn");$("learnNext").disabled=true;answered=false;fillPromptChoices("learn",item,style)}
+function fillPromptChoices(where,item,mode){const prompt=$(where+"Prompt");const box=$(where+"Choices");box.innerHTML="";if(mode==="fix"){prompt.textContent=item.q;const already="Already correct";const opts=item.type==="C"?shuffle([already].concat(item.bad)):shuffle([item.fix].concat(item.bad));opts.forEach(function(txt){const b=document.createElement("button");b.type="button";b.className="choice";b.textContent=txt;const good=item.type==="C"?txt===already:txt===item.fix;b.addEventListener("click",function(){grade(where,item,good,b,"fix")});box.appendChild(b)})}else if(mode==="ear"){prompt.textContent=item.q;const opts=item.type==="C"?[["Sounds finished / legal","ok"],["Sounds broken","bad"]]:[["Sounds finished / legal","bad"],["Sounds broken / needs a fix","ok"]];opts.forEach(function(pair){const b=document.createElement("button");b.type="button";b.className="choice";b.textContent=pair[0];b.addEventListener("click",function(){grade(where,item,pair[1]==="ok",b,"ear")});box.appendChild(b)})}else{prompt.textContent=item.q;const keys=(mode==="sort"||where==="quiz"||learnMode==="mix")?["F","RO","CS","C"]:(learnMode==="fragment"?["F","C"]:learnMode==="runon"?["RO","C"]:["CS","C"]);keys.forEach(function(t){const b=document.createElement("button");b.type="button";b.className="choice";b.textContent=LABEL[t];b.addEventListener("click",function(){grade(where,item,t===item.type,b,"label")});box.appendChild(b)})}}
+function grade(where,item,good,btn,kind){if(where==="learn"&&answered)return;if(where==="quiz"&&quizAnswered)return;if(where==="learn")answered=true;else quizAnswered=true;[].forEach.call($(where+"Choices").children,function(b){if(kind==="fix"&&item.type==="C"&&b.textContent==="Already correct")b.classList.add("correct");if(kind==="fix"&&item.type!=="C"&&b.textContent===item.fix)b.classList.add("correct")});const feed=$(where+"Feed");if(good){btn.classList.add("correct");feed.textContent=explain(item);feed.className="feedback good";addXP(where==="quiz"?15:10);if(where==="quiz")quizScore++}else{btn.classList.add("wrong");feed.textContent="This is a "+LABEL[item.type].toLowerCase()+". "+explain(item);feed.className="feedback bad";showHack(where,item.type);if(where==="learn")addXP(2);if(where==="quiz")quizMiss.push({q:item.q,right:LABEL[item.type],why:item.why,fix:item.fix})}$(where+"Next").disabled=false;if(where==="learn")$("learnNext").textContent=learnI===learnItems.length-1?"Done":"Next";if(where==="quiz")$("quizNext").textContent=quizI===quizItems.length-1?"See grade":"Next"}
+function learnNext(){if(learnI<learnItems.length-1){learnI++;renderLearn()}else goHome()}
+function startQuiz(){quizItems=shuffle(ITEMS).slice(0,10);quizI=0;quizScore=0;quizMiss=[];quizAnswered=false;show("quiz");renderQuiz()}
+function renderQuiz(){const item=quizItems[quizI];$("quizMeta").textContent="Question "+(quizI+1)+" of "+quizItems.length;$("quizBar").style.width=(quizI/quizItems.length*100)+"%";$("quizFeed").textContent="Go.";hideHack("quiz");$("quizNext").disabled=true;quizAnswered=false;fillPromptChoices("quiz",item,["label","fix","ear","sort"][quizI%4])}
+function quizNext(){if(quizI<quizItems.length-1){quizI++;renderQuiz()}else finishQuiz()}
+function finishQuiz(){const pct=Math.round(quizScore/quizItems.length*100);let letter="F";if(pct>=90)letter="A";else if(pct>=80)letter="B";else if(pct>=70)letter="C";else if(pct>=60)letter="D";$("finalScore").textContent=pct+"% "+letter;$("finalMsg").textContent=quizScore+" / "+quizItems.length;$("missList").innerHTML=quizMiss.length?quizMiss.map(function(m){return "<p><b>"+m.q+"</b><br>"+m.right+". "+m.why+"</p>"}).join(""):"No misses.";addXP(pct>=70?40:10);save.quizzes=(save.quizzes||0)+1;if(pct>(save.bestPct||0))save.bestPct=pct;persist();show("results")}
+$("styleGrid").addEventListener("click",function(e){const t=e.target.closest("[data-style]");if(t)pickStyle(t.getAttribute("data-style"))});
+$("topicGrid").addEventListener("click",function(e){const t=e.target.closest("[data-topic]");if(t)startLearn(t.getAttribute("data-topic"))});
+$("quizBtn").onclick=startQuiz;$("learnHome").onclick=goHome;$("learnNext").onclick=learnNext;$("learnHackBtn").onclick=function(){toggleHack("learn")};
+$("quizQuit").onclick=goHome;$("quizNext").onclick=quizNext;$("quizHackBtn").onclick=function(){toggleHack("quiz")};
+$("retakeBtn").onclick=startQuiz;$("resultsHome").onclick=goHome;persist();
+</script></body></html>
